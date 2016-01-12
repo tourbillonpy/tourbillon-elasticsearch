@@ -18,6 +18,7 @@ def get_es_cluster_stats(agent):
     db_config = config['database']
     yield From(agent.async_create_database(**db_config))
     base_url = config['base_url']
+    loop = asyncio.get_event_loop()
     while agent.run_event.is_set():
         logger.debug('in while loop')
         try:
@@ -132,6 +133,7 @@ def get_es_nodes_stats(agent):
     db_config = config['database']
     yield From(agent.async_create_database(**db_config))
     base_url = config['base_url']
+    loop = asyncio.get_event_loop()
     while agent.run_event.is_set():
         logger.debug('in while loop')
         try:
@@ -234,9 +236,9 @@ def get_es_nodes_stats(agent):
                     fields['indices_flush_total_time_in_millis'] =\
                         node['indices']['flush']['total_time_in_millis']
 
-                   fields['indices_warmer_current'] =\
+                    fields['indices_warmer_current'] =\
                         node['indices']['warmer']['current']
-                   fields['indices_warmer_total'] =\
+                    fields['indices_warmer_total'] =\
                         node['indices']['warmer']['total']
                     fields['indices_warmer_total_time_in_millis'] =\
                         node['indices']['warmer']['total_time_in_millis']
@@ -292,6 +294,7 @@ def get_es_nodes_stats(agent):
 
 
                     points.append(point)
+                print(points)
                 logger.debug('es data: {}'.format(points))
                 yield From(agent.async_push(points, db_config['name']))
             else:
