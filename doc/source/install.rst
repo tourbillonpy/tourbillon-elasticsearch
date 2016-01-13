@@ -5,9 +5,9 @@ Using tourbillon
 ================
 
 
-To install tourbillon-redis at a command prompt type: ::
+To install tourbillon-elasticsearch at a command prompt type: ::
 
-	$ sudo -i tourbillon install tourbillon-redis
+	$ sudo -i tourbillon install tourbillon-elasticsearch
 
 
 
@@ -15,11 +15,11 @@ Using pip
 =========
 
 
-To install tourbillon-redis using pip enter: ::
+To install tourbillon-elasticsearch using pip enter: ::
 
-	$ pip install tourbillon-redis
+	$ pip install tourbillon-elasticsearch
 
 .. note::
 	
-	If you have installed tourbillon in a virtualenv you must install tourbillon-redis in the same virtualenv.
+	If you have installed tourbillon in a virtualenv you must install tourbillon-elasticsearch in the same virtualenv.
 

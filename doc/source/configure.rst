@@ -2,36 +2,40 @@ Configure
 *********
 
 
-Create the tourbillon-redis configuration file
-==============================================
+Create the tourbillon-elasticsearch configuration file
+======================================================
 
-You must create the tourbillon-redis configuration file in order to use tourbillon-redis.
+You must create the tourbillon-elasticsearch configuration file in order to use tourbillon-elasticsearch.
 By default, the configuration file must be placed in **/etc/tourbillon/conf.d** and its name
-must be **redis.conf**.
+must be **elasticsearch.conf**.
 
-The tourbillon-redis configuration file looks like: ::
+The tourbillon-elasticsearch configuration file looks like: ::
 
 	{
 		"database": {
-			"name": "redis",
+			"name": "elasticsearch",
 			"duration": "365d",
 			"replication": "1"
 		},
-		"connection": {
-			"host": "localhost",
-			"port": 6379,
-			"db": 0
-		},
+		"host": "localhost",
+		"base_url": "http://localhost:9200",
 		"frequency": 1
 	}
 
 
-You can customize the database name, the retencion policy and the redis connection parameters.
+You can customize the database name, the hostname with which datapoints are tagged,
+the frequency at which measures are collected and the Elasticsearch base url.
 
 
-Enable the tourbillon-redis metrics collectors
+Enable the tourbillon-linux metrics collectors
 ==============================================
 
-To enable the tourbillon-redis metrics collectors types the following command: ::
+To enable the tourbillon-elasticsearch metrics collectors types the following command: ::
 
-	$ sudo -i tourbillon enable tourbillon.redis=get_redis_stats
+	$ sudo -i tourbillon enable tourbillon.elasticsearch=<collector_name>
+
+Where <collector_name> can be one of or a comma separated list of the colectors names within:
+	
+	* get_es_cluster_stats
+	* get_es_nodes_stats
+

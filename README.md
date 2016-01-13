@@ -3,16 +3,16 @@
 
 -----
 
-# What is tourbillon-redis
+# What is tourbillon-elasticsearch
 
-tourbillon-redis is a tourbillon plugin that can collect metrics from a redis server.
+tourbillon-elasticsearch is a tourbillon plugin that can collect metrics from an Elasticsearch server or cluster.
 For more informations about tourbillon please visit the [project page](http://www.github.com/tourbillonpy/tourbillon-agent).
 
 
 # Documentation
 
-You can browse the tourbillon-redis documentation online, it is hosted on Read The Docs.
-The documentation of the latest version of tourbillon-redis can be found [here](http://tourbillon-redis.readthedocs.org/en/latest/).
+You can browse the tourbillon-elasticsearch documentation online, it is hosted on Read The Docs.
+The documentation of the latest version of tourbillon-elasticsearch can be found [here](http://tourbillon-elasticsearch.readthedocs.org/en/latest/).
 
 
 # Contributing
