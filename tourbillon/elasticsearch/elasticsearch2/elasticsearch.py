@@ -140,7 +140,7 @@ def get_es_nodes_stats(agent):
             yield From(asyncio.sleep(config['frequency']))
             points = []
             nodes_stats_url = urlparse.urljoin(base_url,
-                                                 '_nodes/stats')
+                                               '_nodes/stats')
             res = yield From(loop.run_in_executor(
                 None, requests.get, nodes_stats_url))
 
@@ -292,9 +292,124 @@ def get_es_nodes_stats(agent):
                     fields['indices_suggest_current'] =\
                         node['indices']['suggest']['current']
 
+                    fields['process_cpu_percent'] =\
+                        node['process']['cpu']['percent']
+                    fields['process_cpu_sys_in_millis'] =\
+                        node['process']['cpu']['sys_in_millis']
+                    fields['process_cpu_user_in_millis'] =\
+                        node['process']['cpu']['user_in_millis']
+                    fields['process_cpu_total_in_millis'] =\
+                        node['process']['cpu']['total_in_millis']
+
+                    fields['process_mem_resident_in_bytes'] =\
+                        node['process']['mem']['resident_in_bytes']
+                    fields['process_mem_share_in_bytes'] =\
+                        node['process']['mem']['share_in_bytes']
+                    fields['process_mem_total_virtual_in_bytes'] =\
+                        node['process']['mem']['total_virtual_in_bytes']
+
+                    fields['jvm_mem_heap_used_in_bytes'] =\
+                        node['jvm']['mem']['heap_used_in_bytes']
+                    fields['jvm_mem_heap_used_percent'] =\
+                        node['jvm']['mem']['heap_used_percent']
+                    fields['jvm_mem_heap_committed_in_bytes'] =\
+                        node['jvm']['mem']['heap_committed_in_bytes']
+                    fields['jvm_mem_heap_max_in_bytes'] =\
+                        node['jvm']['mem']['heap_max_in_bytes']
+                    fields['jvm_mem_non_heap_used_in_bytes'] =\
+                        node['jvm']['mem']['non_heap_used_in_bytes']
+                    fields['jvm_mem_non_heap_committed_in_bytes'] =\
+                        node['jvm']['mem']['non_heap_committed_in_bytes']
+
+                    young_pool = node['jvm']['mem']['pools']['young']
+                    fields['jvm_mem_pools_young_used_in_bytes'] =\
+                        young_pool['used_in_bytes']
+                    fields['jvm_mem_pools_young_max_in_bytes'] =\
+                        young_pool['max_in_bytes']
+                    fields['jvm_mem_pools_young_peak_used_in_bytes'] =\
+                        young_pool['peak_used_in_bytes']
+                    fields['jvm_mem_pools_young_peak_max_in_bytes'] =\
+                        young_pool['peak_max_in_bytes']
+
+                    survivor_pool = node['jvm']['mem']['pools']['survivor']
+                    fields['jvm_mem_pools_survivor_used_in_bytes'] =\
+                        survivor_pool['used_in_bytes']
+                    fields['jvm_mem_pools_survivor_max_in_bytes'] =\
+                        survivor_pool['max_in_bytes']
+                    fields['jvm_mem_pools_survivor_peak_used_in_bytes'] =\
+                        survivor_pool['peak_used_in_bytes']
+                    fields['jvm_mem_pools_survivor_peak_max_in_bytes'] =\
+                        survivor_pool['peak_max_in_bytes']
+
+                    old_pool = node['jvm']['mem']['pools']['old']
+                    fields['jvm_mem_pools_old_used_in_bytes'] =\
+                        old_pool['used_in_bytes']
+                    fields['jvm_mem_pools_old_max_in_bytes'] =\
+                        old_pool['max_in_bytes']
+                    fields['jvm_mem_pools_old_peak_used_in_bytes'] =\
+                        old_pool['peak_used_in_bytes']
+                    fields['jvm_mem_pools_old_peak_max_in_bytes'] =\
+                        old_pool['peak_max_in_bytes']
+
+                    fields['jvm_threads_count'] =\
+                        node['jvm']['threads']['count']
+                    fields['jvm_threads_peak_count'] =\
+                        node['jvm']['threads']['peak_count']
+
+                    gc_young_col = node['jvm']['gc']['collectors']['young']
+                    fields['jvm_gc_col_young_collection_count'] =\
+                        gc_young_col['collection_count']
+                    fields['jvm_gc_col_young_collection_time_in_millis'] =\
+                        gc_young_col['collection_time_in_millis']
+
+                    gc_old_col = node['jvm']['gc']['collectors']['old']
+                    fields['jvm_gc_col_old_collection_count'] =\
+                        gc_old_col['collection_count']
+                    fields['jvm_gc_col_old_collection_time_in_millis'] =\
+                        gc_old_col['collection_time_in_millis']
+
+                    dir_buf_pool = node['jvm']['buffer_pools']['direct']
+                    fields['jvm_bufpool_direct_count'] =\
+                        dir_buf_pool['count']
+                    fields['jvm_bufpool_direct_used_in_bytes'] =\
+                        dir_buf_pool['used_in_bytes']
+                    fields['jvm_bufpool_direct_total_capacity_in_bytes'] =\
+                        dir_buf_pool['total_capacity_in_bytes']
+
+                    map_buf_pool = node['jvm']['buffer_pools']['mapped']
+                    fields['jvm_bufpool_mapped_count'] =\
+                        map_buf_pool['count']
+                    fields['jvm_bufpool_mapped_used_in_bytes'] =\
+                        map_buf_pool['used_in_bytes']
+                    fields['jvm_bufpool_mapped_total_capacity_in_bytes'] =\
+                        map_buf_pool['total_capacity_in_bytes']
+
+                    for pool in ('generic', 'index', 'snapshot_data', 'bench',
+                                 'get', 'snapshot', 'merge', 'suggest', 'bulk',
+                                 'optimize', 'warmer', 'flush', 'search',
+                                 'percolate', 'management', 'refresh'):
+                        for k, v in node['thread_pool'][pool].items():
+                            field_name = 'threadpool_{}_{}'.format(pool, k)
+                            fields[field_name] = v
+
+                    for k, v in node['network']['tcp'].items():
+                        field_name = 'network_tcp_{}'.format(k)
+                        fields[field_name] = v
+
+                    for k, v in node['fs']['total'].items():
+                        field_name = 'fs_total_{}'.format(k)
+                        fields[field_name] = v
+
+                    for metric_group in ('transport', 'http',
+                                         'fielddata_breaker'):
+                        for k, v in node[metric_group].items():
+                            if metric_group == 'fielddata_breaker' and\
+                                    k in ('maximum_size', 'estimated_size'):
+                                continue
+                            field_name = '{}_{}'.format(metric_group, k)
+                            fields[field_name] = v
 
                     points.append(point)
-                print(points)
                 logger.debug('es data: {}'.format(points))
                 yield From(agent.async_push(points, db_config['name']))
             else:
